@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  @apply bg-gray-50 text-gray-900;
+}
 
 :root {
   --background: #ffffff;

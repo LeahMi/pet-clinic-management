@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pet Clinic Management Application
+
+A Next.js application for managing pets in a clinic, built with React, MongoDB Atlas, and Tailwind CSS.
+
+## Features
+
+- Single-page application with a responsive table of pets
+- Modal for adding and editing pet records
+- CRUD operations via Next.js API routes
+- MongoDB Atlas for database storage
+- Material-UI components for UI
+- React Query for data fetching and caching
+- React Table for displaying data
+- Tailwind CSS for styling
+- Keyboard accessible and responsive design
+
+## Tech Stack
+
+- **Framework:** Next.js (App Router)
+- **Database:** MongoDB Atlas
+- **Styling:** Tailwind CSS
+- **UI Library:** Material-UI
+- **Data Fetching:** React Query
+- **Tables:** React Table
+- **Language:** TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- MongoDB Atlas account (free tier available)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up MongoDB Atlas:
+   - Create a cluster on [MongoDB Atlas](https://www.mongodb.com/atlas)
+   - Get your connection string
+   - Create a `.env.local` file in the root directory:
+     ```
+     MONGODB_URI=your_mongodb_atlas_connection_string
+     ```
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Project Structure
+
+- `src/app/` - Next.js App Router pages and API routes
+- `src/components/` - React components (PetTable, PetModal, Providers)
+- `src/lib/` - Utility functions (MongoDB connection)
+- `src/models/` - Mongoose models
+- `src/types/` - TypeScript type definitions
+
+## API Routes
+
+- `GET /api/pets` - Fetch all pets
+- `POST /api/pets` - Create a new pet
+- `GET /api/pets/[id]` - Fetch a specific pet
+- `PUT /api/pets/[id]` - Update a pet
+- `DELETE /api/pets/[id]` - Delete a pet
+
+## Building for Production
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Accessibility
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application is designed to be fully accessible:
+- Keyboard navigation support
+- ARIA labels and roles
+- Responsive design for mobile and desktop
+- High contrast colors
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Contributing
 
-## Learn More
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.
