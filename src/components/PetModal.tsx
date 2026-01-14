@@ -1,43 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  IconButton,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, Button, Select, MenuItem, FormControl,
+  InputLabel, IconButton, Box
 } from '@mui/material';
+import { Delete, Close } from '@mui/icons-material';
 import { Patient } from '@/types/Patient';
 import { patientSchema } from '@/validation/patient.schema';
-import { ZodError } from 'zod';
-import { Delete } from '@mui/icons-material';
-
 
 interface PetModalProps {
   open: boolean;
   onClose: () => void;
   patient?: Patient;
-  onSave: (data: { name: string; phone: string; petName: string; dateOfBirth: string; petType: 'dog' | 'cat' | 'parrot' }) => void;
-  onDelete?: (patientId: string) => void;
+  onSave: (data: any) => void;
+  onDelete: (id: string) => void; // הוספנו כחובה
 }
 
 export default function PetModal({ open, onClose, patient, onSave, onDelete }: PetModalProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    petName: '',
-    dateOfBirth: '',
-    petType: 'dog' as 'dog' | 'cat' | 'parrot',
+    name: '', phone: '', petName: '', dateOfBirth: '', petType: 'dog' as 'dog' | 'cat' | 'parrot',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (patient) {
+    if (patient && open) {
       setFormData({
         name: patient.name,
         phone: patient.phone,
@@ -46,142 +32,81 @@ export default function PetModal({ open, onClose, patient, onSave, onDelete }: P
         petType: patient.pet.type,
       });
     } else {
-      setFormData({
-        name: '',
-        phone: '',
-        petName: '',
-        dateOfBirth: '',
-        petType: 'dog',
-      });
+      setFormData({ name: '', phone: '', petName: '', dateOfBirth: '', petType: 'dog' });
     }
+    setErrors({});
   }, [patient, open]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handlePetTypeChange = (e: any) => {
-    setFormData({ ...formData, petType: e.target.value });
-  };
-
   const handleSave = () => {
-  const result = patientSchema.safeParse(formData);
+    const result = patientSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach(issue => {
+        if (issue.path[0]) fieldErrors[issue.path[0] as string] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    onSave(result.data);
+  };
 
-  if (!result.success) {
-    const fieldErrors: Record<string, string> = {};
-
-    result.error.issues.forEach(issue => {
-      const field = issue.path[0];
-      if (field) {
-        fieldErrors[field as string] = issue.message;
-      }
-    });
-
-    setErrors(fieldErrors);
-    return;
-  }
-
-  setErrors({});
-  onSave(result.data);
-};
-
- const handleDeleteClick = () => {
-  if (patient && onDelete) {
-    onDelete(patient._id); 
-  }
-};
-
-  
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{
-    className: 'mx-2 sm:mx-0'
-  }}>
-      <DialogTitle className="font-semibold" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {patient ? 'Edit Patient' : 'Add Patient'}
-        {patient && onDelete && (
-          <IconButton color="error" onClick={handleDeleteClick}>
-            <Delete />
-          </IconButton>
-        )}
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <span className="font-bold">{patient ? 'Edit Patient' : 'Add New Patient'}</span>
+          <Box>
+            {patient && (
+              <IconButton color="error" onClick={() => onDelete(patient._id)} title="Delete Patient">
+                <Delete />
+              </IconButton>
+            )}
+            <IconButton onClick={onClose} size="small">
+              <Close />
+            </IconButton>
+          </Box>
+        </Box>
       </DialogTitle>
-      <DialogContent>
-        <TextField
-          autoFocus
-          margin="dense"
-          name="name"
-          label="Name"
-          type="text"
-          fullWidth
-          value={formData.name}
-          onChange={handleChange}
-          required
-          error={!!errors.name}
-          helperText={errors.name}
-        />
-        <TextField
-          margin="dense"
-          name="phone"
-          label="Phone"
-          type="tel"
-          fullWidth
-          value={formData.phone}
-          onChange={handleChange}
-          required
-          error={!!errors.phone}
-          helperText={errors.phone}
-        />
-        <TextField
-          margin="dense"
-          name="petName"
-          label="Pet Name"
-          type="text"
-          fullWidth
-          value={formData.petName}
-          onChange={handleChange}
-          required
-          error={!!errors.petName}
-          helperText={errors.petName}
-        />
-        <TextField
-          margin="dense"
-          name="dateOfBirth"
-          label="Pet's Date of Birth"
-          type="date"
-          fullWidth
-          value={formData.dateOfBirth}
-          onChange={handleChange}
-          required
-          InputLabelProps={{
-            shrink: true,
-          }}
-          error={!!errors.dateOfBirth}
-          helperText={errors.dateOfBirth}
-        />
-        <FormControl fullWidth margin="dense">
-          <InputLabel>Pet Type</InputLabel>
-          <Select
-            value={formData.petType}
-            onChange={handlePetTypeChange}
-            label="Pet Type"
-            required
-          >
-            <MenuItem value="dog">Dog</MenuItem>
-            <MenuItem value="cat">Cat</MenuItem>
-            <MenuItem value="parrot">Parrot</MenuItem>
-          </Select>
-        </FormControl>
+      
+      <DialogContent dividers>
+        <div className="flex flex-col gap-4 py-2">
+          <TextField label="Owner Name" name="name" fullWidth size="small"
+            value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+            error={!!errors.name} helperText={errors.name} />
+          
+          <TextField label="Phone Number" name="phone" fullWidth size="small"
+            value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            error={!!errors.phone} helperText={errors.phone} />
+
+          <TextField label="Pet Name" name="petName" fullWidth size="small"
+            value={formData.petName} onChange={(e) => setFormData({...formData, petName: e.target.value})}
+            error={!!errors.petName} helperText={errors.petName} />
+
+          <TextField label="Pet Date of Birth" type="date" fullWidth size="small"
+            InputLabelProps={{ shrink: true }}
+            value={formData.dateOfBirth} onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+            error={!!errors.dateOfBirth} helperText={errors.dateOfBirth} />
+
+          <FormControl fullWidth size="small">
+            <InputLabel>Pet Type</InputLabel>
+            <Select label="Pet Type" value={formData.petType} 
+              onChange={(e) => setFormData({...formData, petType: e.target.value as any})}>
+              <MenuItem value="dog">Dog</MenuItem>
+              <MenuItem value="cat">Cat</MenuItem>
+              <MenuItem value="parrot">Parrot</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
       </DialogContent>
-      <DialogActions className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
 
-        <Button variant='outlined' onClick={onClose}>
-            Cancel
+      <DialogActions sx={{ p: 2, justifyContent: 'center', gap: 2 }}>
+        <Button onClick={onClose} variant="outlined" color="inherit" sx={{ borderRadius: '8px', flex: 1 }}>
+          Cancel
         </Button>
-
-        <Button onClick={handleSave} variant="contained">
-            {patient ? 'Save' : 'Add'}
+        <Button onClick={handleSave} variant="contained" sx={{ borderRadius: '8px', flex: 1 }}>
+          {patient ? 'Update' : 'Create'}
         </Button>
       </DialogActions>
-
     </Dialog>
   );
 }
