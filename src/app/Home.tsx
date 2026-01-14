@@ -6,7 +6,7 @@ import { Add } from '@mui/icons-material';
 import PetTable from '@/components/PetTable';
 import PetModal from '@/components/PetModal';
 import { Patient } from '@/types/Patient';
-import { usePatients } from '../hooks/usePatients';
+import { usePatients } from '@/hooks/usePatients';
 
 export default function Home() {
   const { 

@@ -6,7 +6,7 @@ import {
 } from '@mui/material'
 import { Edit, Delete, FilterList, Search } from '@mui/icons-material'
 import { Patient } from '@/types/Patient'
-import { usePetTable } from '../hooks/usePetTable'
+import { usePetTable } from '@/hooks/usePetTable'
 
 interface PetTableProps {
   data: Patient[]
