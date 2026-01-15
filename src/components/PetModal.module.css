@@ -1,0 +1,92 @@
+.dialog {
+  border-radius: 20px !important;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.titleWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.titleText {
+  font-weight: 800;
+  color: var(--foreground);
+  font-size: 1.25rem;
+}
+
+.closeIcon {
+  color: var(--muted-color);
+  transition: color 0.2s ease;
+}
+
+.closeIcon:hover {
+  color: var(--primary-color);
+}
+
+.deleteIcon {
+  color: var(--secondary-color);
+  transition: all 0.2s ease;
+}
+
+.deleteIcon:hover {
+  color: var(--error-color);
+  background-color: rgba(211, 47, 47, 0.04);
+}
+
+.content {
+  overflow: hidden !important;
+  padding: 16px 24px !important;
+  border-top: 1px solid var(--muted-color) !important;
+  border-bottom: 1px solid var(--muted-color) !important;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inputField :global(.MuiInputBase-root) {
+  height: 45px;
+}
+
+.actions {
+  padding: 24px !important;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.cancelBtn {
+  border-radius: 12px !important;
+  flex: 1;
+  color: var(--secondary-color) !important;
+  border-color: var(--muted-color) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+}
+
+.saveBtn {
+  border-radius: 12px !important;
+  flex: 1;
+  background-color: var(--primary-color) !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(38, 85, 115, 0.2) !important;
+}
+
+.saveBtn:hover {
+  background-color: var(--foreground) !important;
+  box-shadow: 0 6px 16px rgba(1, 24, 38, 0.3) !important;
+}
+
+.errorText {
+  color: var(--error-color);
+  font-size: 0.75rem;
+  margin-top: 4px;
+  margin-left: 14px;
+}

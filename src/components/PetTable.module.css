@@ -1,0 +1,26 @@
+.tableWrapper {
+  width: 100%;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -5px rgba(1, 24, 38, 0.1);
+  background: white;
+  border: 1px solid var(--muted-color);
+}
+
+.headerCell {
+  background-color: var(--muted-color) !important;
+  color: var(--foreground) !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px !important;
+}
+
+.row {
+  transition: background-color 0.2s ease;
+}
+
+.row:hover {
+  background-color: rgba(191, 150, 115, 0.08) !important;
+}

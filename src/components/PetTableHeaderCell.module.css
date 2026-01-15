@@ -1,0 +1,42 @@
+.headerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 60px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.searchInput {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.searchInput :global(.MuiOutlinedInput-root) {
+  border-radius: 10px !important;
+}
+
+.searchInput :global(.MuiOutlinedInput-notchedOutline) {
+  border-radius: 10px !important;
+  border-color: var(--muted-color) !important;
+}
+
+.searchInput :global(.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--primary-color) !important;
+  border-width: 1.5px !important;
+}
+
+.searchInput :global(.MuiInputBase-input) {
+  padding: 6px 10px !important;
+  font-size: 0.75rem !important;
+  color: var(--foreground);
+}
+
+.spacer {
+  height: 24px;
+}

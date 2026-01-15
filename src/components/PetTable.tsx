@@ -1,67 +1,64 @@
-import React from 'react'
-import { flexRender, Header } from '@tanstack/react-table'
+import React, { useState } from "react";
+import { flexRender } from "@tanstack/react-table";
 import {
-  IconButton, TextField, Popover, Checkbox, FormControlLabel,
-  TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody, FormGroup, InputAdornment
-} from '@mui/material'
-import { Edit, Delete, FilterList, Search } from '@mui/icons-material'
-import { Patient } from '@/types/Patient'
-import { usePetTable } from '@/hooks/usePetTable'
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Box,
+} from "@mui/material";
+import { Search, FilterList } from "@mui/icons-material";
+import { Patient } from "@/types/Patient";
+import { usePetTable } from "@/hooks/usePetTable";
+import { PetMobileCard } from "./PetMobileCard";
+import { PetTypeFilter } from "./PetTypeFilter";
+import { PetTableHeaderCell } from "./PetTableHeaderCell";
+import styles from "./PetTable.module.css";
 
 interface PetTableProps {
-  data: Patient[]
-  onEdit: (patient: Patient) => void
-  onDelete: (id: string) => void
-  globalFilter: string 
-  setGlobalFilter: (val: string) => void
-  selectedTypes: string[]
-  setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>
+  data: Patient[];
+  onEdit: (patient: Patient) => void;
+  onDelete: (id: string) => void;
+  filters: { ownerName: string; petName: string };
+  setFilters: React.Dispatch<
+    React.SetStateAction<{ ownerName: string; petName: string }>
+  >;
+
+  globalFilter: string;
+  setGlobalFilter: (val: string) => void;
+  selectedTypes: string[];
+  setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export default function PetTable({ 
-  data, onEdit, onDelete, globalFilter, setGlobalFilter, selectedTypes, setSelectedTypes 
+export default function PetTable({
+  data = [],
+  onEdit,
+  onDelete,
+  filters = { ownerName: "", petName: "" },
+  setFilters,
+  globalFilter = "",
+  setGlobalFilter,
+  selectedTypes = [],
+  setSelectedTypes,
 }: PetTableProps) {
-  
   const { table } = usePetTable(data, onEdit, onDelete);
-  const [typeAnchor, setTypeAnchor] = React.useState<null | HTMLElement>(null);
+  const [typeAnchor, setTypeAnchor] = useState<null | HTMLElement>(null);
 
-  // פונקציה לרינדור כותרת דסקטופ עם חיפוש מובנה
-  const renderHeader = (header: Header<Patient, unknown>) => {
-    const col = header.column;
-    const id = col.id;
-    const searchableColumns = ['name', 'pet.name'];
-
-    return (
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-gray-700">
-            {flexRender(col.columnDef.header, header.getContext())}
-          </span>
-          {id === 'pet.type' && (
-            <IconButton size="small" onClick={(e) => setTypeAnchor(e.currentTarget)}>
-              <FilterList fontSize="small" color={selectedTypes.length > 0 ? "primary" : "inherit"} />
-            </IconButton>
-          )}
-        </div>
-        {searchableColumns.includes(id) && (
-          <TextField
-            size="small"
-            variant="outlined"
-            placeholder="Search..."
-            value={(col.getFilterValue() as string) || ''}
-            onChange={(e) => col.setFilterValue(e.target.value)}
-            sx={{ '& .MuiInputBase-input': { py: 0.5, fontSize: '0.75rem' }, backgroundColor: '#fff' }}
-          />
-        )}
-      </div>
+  const toggleType = (type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
   return (
     <div className="w-full space-y-4">
-      
-      {/* MOBILE: Search Bar + Filter Icon */}
-      <div className="md:hidden flex gap-2 items-center px-1">
+      <Box className="md:hidden flex gap-2 items-center px-1">
         <TextField
           fullWidth
           size="small"
@@ -71,40 +68,63 @@ export default function PetTable({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search fontSize="small" />
+                <Search fontSize="small" sx={{ color: "#265573" }} />
               </InputAdornment>
             ),
+            sx: { borderRadius: "14px", backgroundColor: "white" },
           }}
-          sx={{ backgroundColor: 'white', borderRadius: '8px' }}
         />
-        <IconButton 
+        <IconButton
           onClick={(e) => setTypeAnchor(e.currentTarget)}
-          className="border border-gray-300 rounded-lg"
-          sx={{ p: '8px' }}
+          sx={{
+            p: "10px",
+            backgroundColor: "white",
+            border: "1px solid #CCD4D9",
+            borderRadius: "12px",
+          }}
         >
-          <FilterList color={selectedTypes.length > 0 ? "primary" : "inherit"} />
+          <FilterList
+            sx={{ color: selectedTypes.length > 0 ? "#265573" : "#011826" }}
+          />
         </IconButton>
-      </div>
+      </Box>
 
-      {/* DESKTOP TABLE */}
-      <TableContainer component={Paper} className="hidden md:block shadow-sm rounded-xl border border-gray-200">
+      <TableContainer
+        component={Paper}
+        className={`${styles.tableWrapper} hidden md:block`}
+      >
         <Table stickyHeader>
           <TableHead>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableCell key={header.id} className="bg-gray-50">
-                    {renderHeader(header)}
+                {headerGroup.headers.map((header) => (
+                  <TableCell key={header.id} className={styles.headerCell}>
+                    <PetTableHeaderCell
+                      header={header}
+                      selectedTypes={selectedTypes}
+                      onFilterClick={setTypeAnchor}
+                      searchValue={
+                        header.column.id === "name"
+                          ? filters.ownerName
+                          : filters.petName
+                      }
+                      onSearchChange={(val) => {
+                        if (header.column.id === "name")
+                          setFilters((prev) => ({ ...prev, ownerName: val }));
+                        else if (header.column.id === "pet.name")
+                          setFilters((prev) => ({ ...prev, petName: val }));
+                      }}
+                    />
                   </TableCell>
                 ))}
               </TableRow>
             ))}
           </TableHead>
           <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id} hover>
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id} className={styles.row}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} sx={{ verticalAlign: "top", pt: 2 }}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -114,62 +134,23 @@ export default function PetTable({
         </Table>
       </TableContainer>
 
-      {/* MOBILE CARDS */}
-      <div className="md:hidden flex flex-col gap-3">
-        {table.getRowModel().rows.map(row => (
-          <div key={row.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-start">
-              <div className="space-y-1">
-                <div className="font-bold text-gray-900 leading-tight">{row.original.name}</div>
-                <div className="flex items-center gap-2">
-                   <span className="text-sm font-medium text-blue-600">Pet: {row.original.pet.name}</span>
-                   <span className="text-[10px] px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full uppercase">{row.original.pet.type}</span>
-                </div>
-                <div className="text-xs text-gray-600 flex items-center gap-1">
-                <span className="font-medium text-gray-500">DOB:</span>
-                {new Date(row.original.pet.dateOfBirth).toLocaleDateString('he-IL')}
-              </div>
-                <div className="text-xs text-gray-400">Phone: {row.original.phone}</div>
-              </div>
-              <div className="flex gap-1 bg-gray-50 rounded-lg">
-                <IconButton size="small" onClick={() => onEdit(row.original)}><Edit fontSize="small" /></IconButton>
-                <IconButton size="small" color="error" onClick={() => onDelete(row.original._id)}><Delete fontSize="small" /></IconButton>
-              </div>
-            </div>
-          </div>
+      <div className="md:hidden flex flex-col gap-2">
+        {table.getRowModel().rows.map((row) => (
+          <PetMobileCard
+            key={row.id}
+            patient={row.original}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         ))}
       </div>
 
-      {/* COMMON FILTER POPOVER */}
-      <Popover 
-        open={Boolean(typeAnchor)} 
-        anchorEl={typeAnchor} 
+      <PetTypeFilter
+        anchor={typeAnchor}
         onClose={() => setTypeAnchor(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{ sx: { mt: 1, borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' } }}
-      >
-        <div className="p-3 min-w-[150px]">
-          <div className="text-xs font-bold text-gray-400 mb-2 px-1 uppercase tracking-wider">Filter by Type</div>
-          <FormGroup>
-            {['dog', 'cat', 'parrot'].map(type => (
-              <FormControlLabel
-                key={type}
-                control={
-                  <Checkbox 
-                    size="small"
-                    checked={selectedTypes.includes(type)} 
-                    onChange={() => setSelectedTypes(prev => 
-                      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-                    )} 
-                  />
-                }
-                label={<span className="text-sm capitalize text-gray-700">{type}</span>}
-              />
-            ))}
-          </FormGroup>
-        </div>
-      </Popover>
+        selectedTypes={selectedTypes}
+        onToggle={toggleType}
+      />
     </div>
-  )
+  );
 }

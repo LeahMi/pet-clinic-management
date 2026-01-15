@@ -1,9 +1,11 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { ReactNode } from 'react';
+import dynamic from "next/dynamic";
+import { ReactNode } from "react";
 
-const ClientProviders = dynamic(() => import('./ClientProviders'), { ssr: false });
+const ClientProviders = dynamic(() => import("./ClientProviders"), {
+  ssr: false,
+});
 
 interface ProvidersProps {
   children: ReactNode;
