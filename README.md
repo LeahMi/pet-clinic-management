@@ -2,6 +2,10 @@
 
 A Next.js application for managing pets in a clinic, built with React, MongoDB Atlas, and Tailwind CSS.
 
+## Live Demo
+The app can be found here:
+[**https://pet-clinic-management.vercel.app**](https://pet-clinic-management.vercel.app)
+
 ## Features
 
 - Single-page application with a responsive table of pets
